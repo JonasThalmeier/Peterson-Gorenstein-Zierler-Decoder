@@ -2,40 +2,64 @@ clear all,
 close all;
 clc;
 
-q = 66; % Alphabet size
-d = 1;  % Distance (d=n-k+1)
-N = 1;  % Hamming weight of error
-seede = 42;
-seedc = 42;
-p = 0;
-m = 0;
+N = 1;          % Hamming weight of error in v(x)
+q = 16;          % Alphabet size
+m = log2(q);    %
+d = 6;          % Minimum distance wh(c1-c2)
+j0 = 1;
 
-% p^m=q with p prime has to be determined. We iterate over all p prime
-for base = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97] % all prime numbers <100
-    exp = log(q)/log(base);
-    if mod(exp, 1) == 0
-        p = base;
-        m = exp;
-        break;
-    end
-    % If no p^m=q is found p is set to 2
-    if base == 97
-        m = ceil(log2(q));
-        p = 2;
-    end
-end
-
-n = p^m - 1; % Code block length
-k = n-d+1; % Message length
-
-% Create Reed-Solomon encoder and decoder
-enc = comm.RSEncoder(n, k);
-dec = comm.RSDecoder(n, k);
+n = q-1;        % CW length
+k = n-d+1;      % Message length
+t = floor((d-1)/2); % max number of errors that can be corrected
+ 
 
 % Generate random information vector
+seedc = 42;
 rng(seedc);
-info = randi([0 q-1], k, 1);
-info_tp = gftuple(info,m,p)
+a = randi([0 q-1], 1, k); % a(x)=alpha^a(1)x^k+alpha^a(2)x^k-1+....+alpha^a(end)
+% Create info poly
+gf_a = gf(a,m);
+
+% create gen poly
+alpha = gf(2, m);
+g = gf([1], m); %Initialise g(x)
+for exp=1:2*t
+    g = conv(g, gf([1 -(alpha^exp)], m)); % g(x)=(x-alpha^1)...(x-alpha^d-1)
+end
+
+a_prime = [a zeros(1,n-k)]; % shift a to the left
+[quot,p] = deconv(a_prime, g);  % calculate the remainder
+c = a_prime+p;  % c is the systematic codeword
+
+% Create the error vector and add it to c
+
+seede = 42;
+rng(seede);
+errorIndices = randperm(n, N); % vector of length N with random numbers between 1 and n
+errorVector = zeros(1, n);
+errorVector(errorIndices) = randi([1 q-1], length(errorIndices), 1);
+e = gf(errorVector,m);
+v = c+e;
+
+Sj = zeros(1,2*t);
+% S_j=v(alpha^j)
+for j = 1:2*2t
+    for exp 1:n
+        % to evaluate v(alpha^j) all positions have to be summed together
+        % Every position is the produ
+        Sj(j) = Sj(j)+v.x(exp)*alpha^(j*(n-exp));
+    end
+end
+for ind = t:-1:1
+    S = zeros(ind);
+        for l = 1:ind
+            for k = 1:ind
+                S(l,k) = Sj(l+k-1);
+            end
+        end
+end
+
+
 
 %%
 % Encode information

@@ -53,15 +53,27 @@ for j = 1:2*t
 end
 
 % Build the S-matrix for every t,...,1
-for ind = t:-1:1
+for ind = 1:-1:1
     S = gf(zeros(ind),m);
+    S_vec = gf(zeros(ind,1),m);
     for l = 1:ind
+        S_vec(l) = -Sj(ind+l);
         for k = 1:ind
             S(l,k) = Sj(l+k-1);
         end
     end
+    try
+        Lambda = S\S_vec;  % Tries to solve equation system
+        % Checks if there is a valid solution
+        if ~isempty(Lambda) && all(~isnan(Lambda.x))
+            break;
+        end
+    catch ME
+        % continous the loop
+    end
 end
 
+% Lambda_roots = ?????????
 
 
 %%

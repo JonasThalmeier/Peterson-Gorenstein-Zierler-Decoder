@@ -41,22 +41,40 @@ errorVector(errorIndices) = randi([1 q-1], length(errorIndices), 1);
 e = gf(errorVector,m);
 v = c+e;
 
-Sj = zeros(1,2*t);
+Sj = gf(zeros(1,2*t),m);
 % S_j=v(alpha^j)
-for j = 1:2*2t
-    for exp 1:n
-        % to evaluate v(alpha^j) all positions have to be summed together
-        % Every position is the produ
-        Sj(j) = Sj(j)+v.x(exp)*alpha^(j*(n-exp));
+for j = 1:2*t
+    for exp = 1:n
+% to evaluate v(alpha^j) all positions have to be summed together
+% Every position is the product of the polynomials coefficient v.x(idx) and
+% the position (j) to the power of n-idx
+        Sj(j) = Sj(j)+gf(v.x(exp),m)*alpha^(j*(n-exp));
     end
 end
-for ind = t:-1:1
-    S = zeros(ind);
-        for l = 1:ind
-            for k = 1:ind
-                S(l,k) = Sj(l+k-1);
-            end
+
+% Build the S-matrix for every t,...,1
+for ind = 1:-1:1
+    S = gf(zeros(ind),m);
+    S_vec = gf(zeros(ind,1),m);
+    for l = 1:ind
+        S_vec(l) = -Sj(ind+l);
+        for k = 1:ind
+            S(l,k) = Sj(l+k-1);
         end
+    end
+    try
+        Lambda = S\S_vec;  % Versucht das LGS zu lösen
+        % Überprüfen, ob die Lösung gültig ist (nicht leer oder singulär)
+        if ~isempty(Lambda) && all(~isnan(Lambda.x))
+            disp(['Lösung gefunden bei ind = ', num2str(ind)]);
+            disp(Lambda);
+            break;  % Beenden der Schleife, wenn Lösung gefunden
+        end
+    catch ME
+        % Fehlerbehandlung: Wenn hier ein Fehler auftritt, wird der Block ausgeführt
+        disp(['Keine Lösung bei ind = ', num2str(ind), ': ', ME.message]);
+        % Die Schleife fährt mit dem nächsten ind fort
+    end
 end
 
 

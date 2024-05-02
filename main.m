@@ -2,6 +2,9 @@ close all;
 clear;
 clc;
 
+%%
+addpath('./functions')
+
 %% Variables
 N = 1;                          % Hamming weight of error in v(x)
 q = 16;                          % Alphabet size

@@ -2,8 +2,8 @@ clear all,
 close all;
 clc;
 
-N = 1;          % Hamming weight of error in v(x)
-q = 16;          % Alphabet size
+N = 2;          % Hamming weight of error in v(x)
+q = 8;          % Alphabet size
 m = log2(q);    %
 d = 6;          % Minimum distance wh(c1-c2)
 j0 = 1;
@@ -33,7 +33,7 @@ c = a_prime+p;  % c is the systematic codeword
 
 % Create the error vector and add it to c
 
-seede = 42;
+seede = 1;
 rng(seede);
 errorIndices = randperm(n, N); % vector of length N with random numbers between 1 and n
 errorVector = zeros(1, n);
@@ -56,12 +56,13 @@ end
 for ind = 1:-1:1
     S = gf(zeros(ind),m);
     S_vec = gf(zeros(ind,1),m);
-    for l = 1:ind
-        S_vec(l) = -Sj(ind+l);
-        for k = 1:ind
-            S(l,k) = Sj(l+k-1);
+    for l_ind = 1:ind
+        S_vec(l_ind) = -Sj(ind+l_ind);
+        for k_ind = 1:ind
+            S(l_ind,k_ind) = Sj(l_ind+k_ind-1);
         end
     end
+    % if all S_j == 0: break
     try
         Lambda = S\S_vec;  % Tries to solve equation system
         % Checks if there is a valid solution
@@ -73,19 +74,19 @@ for ind = 1:-1:1
     end
 end
 
-% Lambda_roots = ?????????
 
+Lambda = gf([Lambda.x 1],m);    % Add coefficient for position x^0
+Lambda_roots = roots(Lambda);   % Find roots
+X = 1/Lambda_roots;
+X_mat = gf(zeros(length(S)),m);
+for idx = 1:length(S)
+    X_mat(idx,:) = X.^idx;
+end
+Y = X\S;
+X_exp = log(X)./log(alpha); % Find the exponents of alpha in the X array (X=alpha.^X_exp)
+e_red = gf(zeros(1,length(v)),m);
+e_red(n-X_exp) = Y;
 
-%%
-% Encode information
-coded = step(enc, info);
+c_red = v-e_red;
 
-% Introduce errors
-rng(seede);
-errorIndices = randperm(n, N);
-errorVector = zeros(n, 1);
-errorVector(errorIndices) = randi([1 q-1], length(errorIndices), 1);
-noisyCoded = mod(coded + errorVector, q);
-
-% Decode
-decoded = step(dec, noisyCoded)
+a_red = c_red.x(1:k);

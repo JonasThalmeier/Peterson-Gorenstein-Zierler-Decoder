@@ -12,7 +12,8 @@ function [Lambda, no_solution] = error_locator_polynomial(S, m, t)
             shifted_row = circshift(S(1:v)', [0, -(i-1)]);    % Shift the array S to the right by i-1 elements
             S_mat(i, :) = shifted_row;
         end
-
+        % balblabal
+        h = 3+5;
         S_double = double(S_mat.x);
         if det(S_double) ~= 0
             Lambda = S_mat \ S_vec;

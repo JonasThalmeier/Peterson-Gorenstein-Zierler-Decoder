@@ -3,13 +3,13 @@ clear;
 clc;
 
 %%
-addpath('./functions')
+% addpath('./Functions')
 
 %% Variables
-N = 1;                          % Hamming weight of error in v(x)
-q = 16;                          % Alphabet size
-m = log2(q);                    %
-d = 6;                          % Minimum distance wh(c1-c2)
+N = 3;                          % Hamming weight of error in v(x)
+q = 30;                          % Alphabet size
+m = ceil(log2(q));                    %
+d = 10;                          % Minimum distance wh(c1-c2)
 j0 = 1;
 
 n = q-1;                        % CW length
@@ -36,7 +36,10 @@ end
 
 % Reconstruct cw and extract information bits
 c_red = v-e_red;        
-a_red = c_red.x(1:k);   
+a_red = c_red.x(1:k);
+if e==e_red
+    disp('Error was recovered');
+end
 
 %% Output
 

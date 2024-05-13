@@ -6,10 +6,10 @@ clc;
 % addpath('./Functions')
 
 %% Variables
-N = 1;                          % Hamming weight of error in v(x)
-q = 8;                          % Alphabet size
+N = 4;                          % Hamming weight of error in v(x)
+q = 256;                          % Alphabet size
 m = ceil(log2(q));                    %
-d = 3;                          % Minimum distance wh(c1-c2)
+d = 10;                          % Minimum distance wh(c1-c2)
 j0 = 1;
 disp_mode = 3;
 

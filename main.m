@@ -12,6 +12,8 @@ m = ceil(log2(q));                    %
 d = 10;                          % Minimum distance wh(c1-c2)
 j0 = 1;
 disp_mode = 3;
+seedc = 42;
+seede = 42;
 
 n = q-1;                        % CW length
 k = n-d+1;                      % Message length
@@ -19,8 +21,8 @@ t = floor((d-1)/2);             % max number of errors that can be corrected
 alpha = gf(2, m);               % 2 = 010 = alpha
 
 %% Encoding
-[a, c] = codewort_generator(alpha, q, m, n, k, t);
-[v, e] = received_cw_generator(c, n, q, m, N);
+[a, c] = codewort_generator(alpha, q, m, n, k, t, seedc);
+[v, e] = received_cw_generator(c, n, q, m, N, seede);
 
 %% Decoding
 [S, tm_e] = syndrome_evaluation(alpha, t, m, n, v);            % Syndrome evaluation

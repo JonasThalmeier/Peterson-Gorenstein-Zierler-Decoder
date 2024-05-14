@@ -1,7 +1,6 @@
-function [a, c] = codewort_generator(alpha, q, m, n, k, t)
+function [a, c] = codewort_generator(alpha, q, m, n, k, t, seedc)
 
     % Generate random information vector
-    seedc = 42;
     rng(seedc);
     a = randi([0 q-1], 1, k);           % a(x)=alpha^a(1)x^k+alpha^a(2)x^k-1+....+alpha^a(end)
     

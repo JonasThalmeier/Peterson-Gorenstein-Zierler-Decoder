@@ -1,5 +1,4 @@
-function [v, e] = received_cw_generator(c, n, q, m, N)
-    seede = 1;
+function [v, e] = received_cw_generator(c, n, q, m, N, seede)
     rng(seede);
     errorIndices = randperm(n, N); 
     errorVector = zeros(1, n);

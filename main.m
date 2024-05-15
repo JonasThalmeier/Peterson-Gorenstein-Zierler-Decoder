@@ -11,7 +11,7 @@ q = 4;                          % Alphabet size
 m = ceil(log2(q));                    %
 d = 1;                          % Minimum distance wh(c1-c2)
 j0 = 1;
-disp_mode = 3;
+disp_mode = 2;
 seedc = 42;
 seede = 42;
 
@@ -34,7 +34,7 @@ else
 end
 
 if tm_e && ~no_solution
-    e_red = calc_error_poly(Lambda, S, alpha, m, n);     % Calculate error polynomial
+    [e_red, short_lamb] = calc_error_poly(Lambda, S, alpha, m, n);     % Calculate error polynomial
 end
 
 % Reconstruct cw and extract information bits

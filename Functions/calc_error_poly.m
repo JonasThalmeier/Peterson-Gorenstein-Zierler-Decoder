@@ -1,4 +1,4 @@
-function e = calc_error_poly(Lambda, S, alpha, m, n)
+function [e, short_lamb] = calc_error_poly(Lambda, S, alpha, m, n)
 % Function calculates error polynomial
 
 v = length(Lambda.x);               % Matrix dimensions of X_mat
@@ -8,9 +8,10 @@ Lambda = gf([Lambda.x' 1],m);       % Add coefficient for position x^0
 Lambda_roots = roots(Lambda);       % Find roots
 X = 1./Lambda_roots;
 if length(X.x) ~= v
-    disp('Lambda does not have enough roots');
+    short_lamb = 1;
     e = gf(zeros(1,n),m);
 else
+    short_lamb = 0;
     X_mat = gf(zeros(v,v),m);
     for idx = 1:v
         X_mat(idx,:) = X.^idx;
